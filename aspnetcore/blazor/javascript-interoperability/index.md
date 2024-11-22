@@ -138,26 +138,26 @@ export function addHandlers() {
 </p>
 
 @code {
-    private IJSObjectReference? module;
+    private IJSObjectReference? _module;
 
-    protected async override Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            module = await JS.InvokeAsync<IJSObjectReference>("import",
+            _module = await JS.InvokeAsync<IJSObjectReference>("import",
                 "./Components/Pages/AlertUser.razor.js");
 
-            await module.InvokeVoidAsync("addHandlers");
+            await _module.InvokeVoidAsync("addHandlers");
         }
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        if (module is not null)
+        if (_module is not null)
         {
             try
             {
-                await module.DisposeAsync();
+                await _module.DisposeAsync();
             }
             catch (JSDisconnectedException)
             {
@@ -167,7 +167,7 @@ export function addHandlers() {
 }
 ```
 
-In the preceding example, <xref:Microsoft.JSInterop.JSDisconnectedException> is trapped during module disposal in case Blazor's SignalR circuit is lost. If the preceding code is used in a Blazor WebAssembly app, there's no SignalR connection to lose, so you can remove the `try`-`catch` block and leave the line that disposes the module (`await module.DisposeAsync();`). For more information, see <xref:blazor/js-interop/index#javascript-interop-calls-without-a-circuit>.
+In the preceding example, <xref:Microsoft.JSInterop.JSDisconnectedException> is trapped during module disposal in case Blazor's SignalR circuit is lost. If the preceding code is used in a Blazor WebAssembly app, there's no SignalR connection to lose, so you can remove the `try`-`catch` block and leave the line that disposes the module (`await _module.DisposeAsync();`). For more information, see <xref:blazor/js-interop/index#javascript-interop-calls-without-a-circuit>.
 
 For more information, see the following resources:
 
@@ -250,26 +250,26 @@ In the following example, the `DOMCleanup` component:
 <div id="cleanupDiv"></div>
 
 @code {
-    private IJSObjectReference? module;
+    private IJSObjectReference? _module;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            module = await JS.InvokeAsync<IJSObjectReference>(
+            _module = await JS.InvokeAsync<IJSObjectReference>(
                 "import", "./Components/Pages/DOMCleanup.razor.js");
 
-            await module.InvokeVoidAsync("DOMCleanup.createObserver");
+            await _module.InvokeVoidAsync("DOMCleanup.createObserver");
         }
     }
 
     async ValueTask IAsyncDisposable.DisposeAsync()
     {
-        if (module is not null)
+        if (_module is not null)
         {
             try
             {
-                await module.DisposeAsync();
+                await _module.DisposeAsync();
             }
             catch (JSDisconnectedException)
             {
@@ -279,7 +279,7 @@ In the following example, the `DOMCleanup` component:
 }
 ```
 
-In the preceding example, <xref:Microsoft.JSInterop.JSDisconnectedException> is trapped during module disposal in case Blazor's SignalR circuit is lost. If the preceding code is used in a Blazor WebAssembly app, there's no SignalR connection to lose, so you can remove the `try`-`catch` block and leave the line that disposes the module (`await module.DisposeAsync();`). For more information, see <xref:blazor/js-interop/index#javascript-interop-calls-without-a-circuit>.
+In the preceding example, <xref:Microsoft.JSInterop.JSDisconnectedException> is trapped during module disposal in case Blazor's SignalR circuit is lost. If the preceding code is used in a Blazor WebAssembly app, there's no SignalR connection to lose, so you can remove the `try`-`catch` block and leave the line that disposes the module (`await _module.DisposeAsync();`). For more information, see <xref:blazor/js-interop/index#javascript-interop-calls-without-a-circuit>.
 
 In the following example, the `MutationObserver` callback is executed each time a DOM change occurs. Execute your cleanup code when the `if` statement confirms that the target element (`cleanupDiv`) was removed (`if (targetRemoved) { ... }`). It's important to disconnect and delete the `MutationObserver` to avoid a memory leak after your cleanup code executes.
 
@@ -332,7 +332,7 @@ In order to avoid logging <xref:Microsoft.JSInterop.JSDisconnectedException> or 
 For the following component disposal example:
 
 * The server-side component implements <xref:System.IAsyncDisposable>.
-* `module` is an <xref:Microsoft.JSInterop.IJSObjectReference> for a JS module.
+* `_module` is an <xref:Microsoft.JSInterop.IJSObjectReference> for a JS module.
 * <xref:Microsoft.JSInterop.JSDisconnectedException> is caught and not logged.
 * Optionally, you can log custom information in the `catch` statement at whatever log level you prefer. The following example doesn't log custom information because it assumes the developer doesn't care about when or where circuits are disconnected during component disposal.
 
@@ -341,9 +341,9 @@ async ValueTask IAsyncDisposable.DisposeAsync()
 {
     try
     {
-        if (module is not null)
+        if (_module is not null)
         {
-            await module.DisposeAsync();
+            await _module.DisposeAsync();
         }
     }
     catch (JSDisconnectedException)
